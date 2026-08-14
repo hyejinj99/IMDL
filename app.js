@@ -9,6 +9,9 @@ const defaultPosts = [
 let posts = JSON.parse(localStorage.getItem("labhub_posts") || "null") || defaultPosts;
 let currentSort = "latest", currentCategory = null, currentView = "board";
 
+const likedPosts = new Set(JSON.parse(localStorage.getItem("labhub_liked_posts") || "[]"));
+const likedWiki = new Set(JSON.parse(localStorage.getItem("labhub_liked_wiki") || "[]"));
+
 const wikiDocs = {
   plink:{cat:"프로그램 사용법",title:"PLINK 사용법",lead:"신입 연구원이 바로 따라할 수 있도록 정리한 기본 QC 흐름입니다.",likes:27,body:`<h3>1. 기본 QC 흐름</h3><p>먼저 sample/variant missingness를 확인하고, MAF·HWE 기준을 적용합니다.</p><div class="code">plink --bfile raw --geno 0.05 --mind 0.1 --maf 0.01 --hwe 1e-6 --make-bed --out qc_step1</div><h3>2. 체크 포인트</h3><ul><li>분석 전에 phenotype/covariate ID 일치 여부 확인</li><li>QC 기준은 연구 목적에 맞게 문서화</li><li>원본 데이터는 별도로 보존</li></ul>`},
   discussion:{cat:"논문 작성 Guide",title:"Discussion 작성법",lead:"결과를 반복하지 않고, 해석·의미·한계를 명확히 쓰는 구조입니다.",likes:35,body:`<h3>권장 흐름</h3><ol><li>핵심 결과 요약</li><li>기존 문헌과 비교</li><li>가능한 기전/해석</li><li>임상·연구적 의미</li><li>한계와 다음 단계</li></ol>`},
@@ -17,6 +20,17 @@ const wikiDocs = {
 };
 const persistedWiki = JSON.parse(localStorage.getItem("labhub_wiki_likes") || "{}");
 Object.keys(persistedWiki).forEach(k=>{if(wikiDocs[k]) wikiDocs[k].likes=persistedWiki[k]});
+
+function savePosts(){
+  localStorage.setItem("labhub_posts",JSON.stringify(posts));
+  localStorage.setItem("labhub_liked_posts",JSON.stringify([...likedPosts]));
+}
+function saveWiki(){
+  const saved={};
+  Object.entries(wikiDocs).forEach(([k,v])=>saved[k]=v.likes);
+  localStorage.setItem("labhub_wiki_likes",JSON.stringify(saved));
+  localStorage.setItem("labhub_liked_wiki",JSON.stringify([...likedWiki]));
+}
 
 function renderPosts(){
   let data = [...posts];
@@ -27,12 +41,27 @@ function renderPosts(){
   if(q) data = data.filter(p => (p.title+" "+p.desc+" "+p.cat).toLowerCase().includes(q));
   if(currentView==="best") data = data.filter(p=>p.likes>=20);
   data.sort((a,b)=> currentSort==="likes" ? b.likes-a.likes : currentSort==="comments" ? b.comments-a.comments : b.date.localeCompare(a.date));
-  document.querySelector("#postList").innerHTML = data.map(p=>`
-    <div class="post-row row">
-      <div class="score">👍 ${p.likes}</div>
+  document.querySelector("#postList").innerHTML = data.map(p=>{
+    const selected=likedPosts.has(String(p.id));
+    return `<div class="post-row row">
+      <div><button class="post-like ${selected?"liked":""}" data-post-id="${p.id}" ${selected?"disabled":""}>👍 ${p.likes}${selected?" ✓":""}</button></div>
       <div class="post-title"><span class="badge">${p.cat}</span>${p.title}<small>${p.desc}</small></div>
       <div>${p.author}</div><div>${p.comments}</div><div>${p.views}</div><div>${p.date.slice(5)}</div>
-    </div>`).join("") || `<div style="padding:36px;text-align:center;color:#7b8694">조건에 맞는 글이 없습니다.</div>`;
+    </div>`;
+  }).join("") || `<div style="padding:36px;text-align:center;color:#7b8694">조건에 맞는 글이 없습니다.</div>`;
+
+  document.querySelectorAll(".post-like:not(:disabled)").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const id=String(btn.dataset.postId);
+      if(likedPosts.has(id)) return;
+      const post=posts.find(p=>String(p.id)===id);
+      if(!post) return;
+      post.likes+=1;
+      likedPosts.add(id);
+      savePosts();
+      renderPosts();
+    });
+  });
 }
 function setView(view){
   currentView=view;
@@ -57,7 +86,7 @@ document.querySelector("#savePostBtn").onclick=(e)=>{
   if(!title||!body){e.preventDefault();return}
   const today=new Date().toISOString().slice(0,10), m=+today.slice(5,7), q=`${today.slice(0,4)}-Q${Math.ceil(m/3)}`;
   posts.unshift({id:Date.now(),cat:document.querySelector("#postCategory").value,title,desc:body.slice(0,52),author:"Researcher",comments:0,views:1,likes:0,date:today,quarter:q});
-  localStorage.setItem("labhub_posts",JSON.stringify(posts)); setTimeout(renderPosts,50);
+  savePosts(); setTimeout(renderPosts,50);
 };
 
 function renderWiki(key){
@@ -67,16 +96,22 @@ function renderWiki(key){
   document.querySelector("#wikiTitle").textContent=d.title;
   document.querySelector("#wikiLead").textContent=d.lead;
   document.querySelector("#wikiBody").innerHTML=d.body;
-  document.querySelector("#wikiLikeCount").textContent=d.likes;
-  document.querySelector("#wikiLikeBtn").dataset.key=key;
+  const btn=document.querySelector("#wikiLikeBtn");
+  const selected=likedWiki.has(key);
+  btn.dataset.key=key;
+  btn.classList.toggle("liked",selected);
+  btn.disabled=selected;
+  btn.innerHTML=`👍 ${selected?"도움됐어요 ✓":"도움됐어요"} <span id="wikiLikeCount">${d.likes}</span>`;
   const ranking=Object.entries(wikiDocs).sort((a,b)=>b[1].likes-a[1].likes);
   document.querySelector("#wikiRanking").innerHTML=ranking.map(([k,v])=>`<li><strong>${v.title}</strong>👍 ${v.likes}</li>`).join("");
 }
 document.querySelectorAll(".wiki-link").forEach(b=>b.onclick=()=>renderWiki(b.dataset.wiki));
 document.querySelector("#wikiLikeBtn").onclick=(e)=>{
   const key=e.currentTarget.dataset.key;
-  wikiDocs[key].likes++;
-  const saved={};Object.entries(wikiDocs).forEach(([k,v])=>saved[k]=v.likes);
-  localStorage.setItem("labhub_wiki_likes",JSON.stringify(saved)); renderWiki(key);
+  if(likedWiki.has(key)) return;
+  wikiDocs[key].likes+=1;
+  likedWiki.add(key);
+  saveWiki();
+  renderWiki(key);
 };
 renderPosts(); renderWiki("plink");
