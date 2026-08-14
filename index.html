@@ -84,7 +84,17 @@
 
 <dialog id="folderDialog"><form method="dialog" class="dialog-card small-dialog"><div class="dialog-head"><h2>프로젝트 폴더 만들기</h2><button value="cancel" class="icon-btn">✕</button></div><label>폴더 이름<input id="folderName" placeholder="예: SOMDAY / 신장과제 / 논문 A" required /></label><div class="dialog-actions"><button value="cancel">취소</button><button value="default" class="primary" id="saveFolderBtn">만들기</button></div></form></dialog>
 
-<dialog id="noteDialog"><form method="dialog" class="dialog-card note-dialog-card"><div class="dialog-head"><h2 id="noteDialogTitle">연구노트 작성</h2><button value="cancel" class="icon-btn">✕</button></div><input type="hidden" id="noteId" /><div class="form-two"><label>프로젝트 폴더<select id="noteFolder"></select></label><label>공개 범위<select id="noteVisibility"><option value="private">🔒 나만 보기</option><option value="public">🌐 모두에게 공개</option></select></label></div><label>노트 제목<input id="noteTitle" placeholder="실험/분석/회의 내용을 구체적으로 적어주세요" required /></label><label>연구노트 내용<textarea id="noteBody" rows="13" placeholder="목적, 진행 내용, 결과, 다음 할 일 등을 기록하세요." required></textarea></label><div class="note-template">권장 구조: <strong>목적 → 진행 내용 → 결과/관찰 → 문제점 → 다음 할 일</strong></div><div class="dialog-actions"><button value="cancel">취소</button><button value="default" class="primary" id="saveNoteBtn">저장</button></div></form></dialog>
+<dialog id="noteDialog"><form method="dialog" class="dialog-card note-dialog-card"><div class="dialog-head"><h2 id="noteDialogTitle">연구노트 작성</h2><button value="cancel" class="icon-btn">✕</button></div><input type="hidden" id="noteId" />
+  <label>프로젝트 폴더<select id="noteFolder"></select></label>
+  <div class="visibility-box">
+    <div class="visibility-title">공개 범위</div>
+    <select id="noteVisibility" class="visibility-select">
+      <option value="private">🔒 나만 보기 — 다른 연구실 구성원에게 보이지 않음</option>
+      <option value="public">🌐 모두에게 공개 — 공개 연구노트에서 구성원 모두 확인 가능</option>
+    </select>
+    <div class="visibility-help">저장 전에 반드시 공개 범위를 확인하세요. 기본값은 <strong>나만 보기</strong>입니다.</div>
+  </div>
+  <label>노트 제목<input id="noteTitle" placeholder="실험/분석/회의 내용을 구체적으로 적어주세요" required /></label><label>연구노트 내용<textarea id="noteBody" rows="13" placeholder="목적, 진행 내용, 결과, 다음 할 일 등을 기록하세요." required></textarea></label><div class="note-template">권장 구조: <strong>목적 → 진행 내용 → 결과/관찰 → 문제점 → 다음 할 일</strong></div><div class="dialog-actions"><button value="cancel">취소</button><button value="default" class="primary" id="saveNoteBtn">저장</button></div></form></dialog>
 
 <script src="app.js"></script>
 </body>
