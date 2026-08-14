@@ -14,6 +14,7 @@
       <button class="nav-item active" data-view="board">🏠 전체글</button>
       <button class="nav-item" data-view="best">🔥 인기글</button>
       <button class="nav-item" data-view="wiki">📚 Wiki</button>
+      <button class="nav-item" data-view="notes">🗒️ 연구노트</button>
       <button class="nav-item" data-view="ranking">🏆 랭킹</button>
     </nav>
     <div class="section-title">BOARD</div>
@@ -43,6 +44,25 @@
       </div>
     </section>
 
+    <section id="notesView" class="hidden">
+      <div class="notes-toolbar">
+        <div class="tabs"><button class="note-tab active" data-note-scope="mine">내 연구노트</button><button class="note-tab" data-note-scope="public">공개 연구노트</button></div>
+        <button class="primary" id="newNoteBtn">+ 연구노트 작성</button>
+      </div>
+      <div class="notes-layout">
+        <aside class="project-panel">
+          <div class="project-panel-head"><h3>프로젝트 폴더</h3><button id="newFolderBtn" title="폴더 추가">＋</button></div>
+          <button class="project-filter active" data-folder="all">📁 전체 노트</button>
+          <div id="projectFolders"></div>
+          <p class="privacy-hint">🔒 비공개 노트는 현재 사용자만 볼 수 있도록 설계됩니다.</p>
+        </aside>
+        <div class="notes-content">
+          <div class="notes-summary"><div><strong id="notesCount">0</strong><span>노트</span></div><div><strong id="privateCount">0</strong><span>비공개</span></div><div><strong id="publicCount">0</strong><span>공개</span></div></div>
+          <div id="notesList" class="notes-grid"></div>
+        </div>
+      </div>
+    </section>
+
     <section id="rankingView" class="hidden">
       <div class="ranking-head"><div><h2>🏆 Lab Ranking</h2><p>기간 내 작성된 게시글이 받은 추천 수 합계 기준입니다.</p></div><select id="rankingPeriod"><option value="2026-H2">2026 하반기</option><option value="2026-Q3">2026 Q3</option><option value="2026-H1">2026 상반기</option><option value="2026-Q2">2026 Q2</option><option value="2026-Q1">2026 Q1</option></select></div>
       <div class="award-banner">🎁 상·하반기 각 분기 성과를 확인하고, 최고 득점자를 연차 보상 후보로 확인할 수 있습니다.</div>
@@ -61,6 +81,11 @@
 <dialog id="postDialog"><form method="dialog" class="dialog-card"><div class="dialog-head"><h2>새 글 작성</h2><button value="cancel" class="icon-btn">✕</button></div><label>카테고리<select id="postCategory"></select></label><label>제목<input id="postTitle" required /></label><label>내용<textarea id="postBody" rows="7" required></textarea></label><div class="dialog-actions"><button value="cancel">취소</button><button value="default" class="primary" id="savePostBtn">등록</button></div></form></dialog>
 
 <dialog id="adminDialog"><form method="dialog" class="dialog-card"><div class="dialog-head"><h2>보드 관리</h2><button value="cancel" class="icon-btn">✕</button></div><p class="muted">관리자가 새 게시판을 추가하거나 삭제할 수 있습니다.</p><div id="adminCategoryList" class="admin-category-list"></div><label>새 게시판 이름<input id="newCategoryName" placeholder="예: IRB / 논문 Submission" /></label><div class="dialog-actions"><button value="cancel">닫기</button><button value="default" class="primary" id="addCategoryBtn">+ 게시판 추가</button></div></form></dialog>
+
+<dialog id="folderDialog"><form method="dialog" class="dialog-card small-dialog"><div class="dialog-head"><h2>프로젝트 폴더 만들기</h2><button value="cancel" class="icon-btn">✕</button></div><label>폴더 이름<input id="folderName" placeholder="예: SOMDAY / 신장과제 / 논문 A" required /></label><div class="dialog-actions"><button value="cancel">취소</button><button value="default" class="primary" id="saveFolderBtn">만들기</button></div></form></dialog>
+
+<dialog id="noteDialog"><form method="dialog" class="dialog-card note-dialog-card"><div class="dialog-head"><h2 id="noteDialogTitle">연구노트 작성</h2><button value="cancel" class="icon-btn">✕</button></div><input type="hidden" id="noteId" /><div class="form-two"><label>프로젝트 폴더<select id="noteFolder"></select></label><label>공개 범위<select id="noteVisibility"><option value="private">🔒 나만 보기</option><option value="public">🌐 모두에게 공개</option></select></label></div><label>노트 제목<input id="noteTitle" placeholder="실험/분석/회의 내용을 구체적으로 적어주세요" required /></label><label>연구노트 내용<textarea id="noteBody" rows="13" placeholder="목적, 진행 내용, 결과, 다음 할 일 등을 기록하세요." required></textarea></label><div class="note-template">권장 구조: <strong>목적 → 진행 내용 → 결과/관찰 → 문제점 → 다음 할 일</strong></div><div class="dialog-actions"><button value="cancel">취소</button><button value="default" class="primary" id="saveNoteBtn">저장</button></div></form></dialog>
+
 <script src="app.js"></script>
 </body>
 </html>
