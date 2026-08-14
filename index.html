@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lab Knowledge Hub</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">LK</div>
+        <div>
+          <div class="brand-title">Lab Knowledge Hub</div>
+          <div class="brand-sub">Research community</div>
+        </div>
+      </div>
+
+      <nav class="side-nav">
+        <button class="nav-item active" data-view="board">🏠 전체글</button>
+        <button class="nav-item" data-view="best">🔥 인기글</button>
+        <button class="nav-item" data-view="wiki">📚 Wiki</button>
+      </nav>
+
+      <div class="section-title">BOARD</div>
+      <nav class="side-nav categories">
+        <button class="nav-item category-filter" data-category="공지">📢 공지사항</button>
+        <button class="nav-item category-filter" data-category="논문 피드백">📝 논문 피드백</button>
+        <button class="nav-item category-filter" data-category="프로그램">💻 프로그램 사용법</button>
+        <button class="nav-item category-filter" data-category="분석">📊 데이터 분석</button>
+        <button class="nav-item category-filter" data-category="연구 Tip">💡 연구 Tip</button>
+        <button class="nav-item category-filter" data-category="질문">❓ 질문</button>
+      </nav>
+
+      <div class="profile-card">
+        <div class="avatar">HJ</div>
+        <div>
+          <strong>Researcher</strong>
+          <small>Lab member</small>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">전체글</h1>
+          <p id="pageSubtitle">연구 노하우를 공유하고, 좋은 자료를 지식으로 축적합니다.</p>
+        </div>
+        <div class="top-actions">
+          <input id="searchInput" type="search" placeholder="검색..." />
+          <button class="primary" id="newPostBtn">+ 새 글</button>
+        </div>
+      </header>
+
+      <section id="boardView">
+        <div class="toolbar">
+          <div class="tabs">
+            <button class="tab active" data-sort="latest">최신순</button>
+            <button class="tab" data-sort="likes">추천순</button>
+            <button class="tab" data-sort="comments">댓글순</button>
+          </div>
+          <select id="quarterFilter">
+            <option value="all">전체 기간</option>
+            <option value="2026-Q3">2026 Q3</option>
+            <option value="2026-Q2">2026 Q2</option>
+            <option value="2026-Q1">2026 Q1</option>
+          </select>
+        </div>
+
+        <div class="board-card">
+          <div class="board-head row">
+            <div>추천</div><div>제목</div><div>작성자</div><div>댓글</div><div>조회</div><div>날짜</div>
+          </div>
+          <div id="postList"></div>
+        </div>
+      </section>
+
+      <section id="wikiView" class="hidden">
+        <div class="wiki-layout">
+          <aside class="wiki-nav">
+            <h3>문서 목차</h3>
+            <button class="wiki-link active" data-wiki="plink">PLINK 사용법</button>
+            <button class="wiki-link" data-wiki="discussion">Discussion 작성법</button>
+            <button class="wiki-link" data-wiki="feedback">교수님 피드백 반영법</button>
+            <button class="wiki-link" data-wiki="figures">Figure/Table 가이드</button>
+          </aside>
+
+          <article class="wiki-doc">
+            <div class="wiki-meta">
+              <span id="wikiCategory">프로그램 사용법</span>
+              <span id="wikiUpdated">마지막 수정 2026-08-14</span>
+            </div>
+            <h2 id="wikiTitle">PLINK 사용법</h2>
+            <p class="lead" id="wikiLead">신입 연구원이 바로 따라할 수 있도록 정리한 기본 QC 흐름입니다.</p>
+            <div id="wikiBody"></div>
+            <div class="helpful">
+              <button id="wikiLikeBtn">👍 도움됐어요 <span id="wikiLikeCount">27</span></button>
+              <span>좋은 문서는 분기별 BEST에 반영됩니다.</span>
+            </div>
+          </article>
+
+          <aside class="wiki-stats">
+            <h3>이번 분기 도움된 문서</h3>
+            <ol id="wikiRanking"></ol>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="postDialog">
+    <form method="dialog" class="dialog-card" id="postForm">
+      <div class="dialog-head">
+        <h2>새 글 작성</h2>
+        <button value="cancel" class="icon-btn">✕</button>
+      </div>
+      <label>카테고리
+        <select id="postCategory">
+          <option>논문 피드백</option>
+          <option>프로그램</option>
+          <option>분석</option>
+          <option>연구 Tip</option>
+          <option>질문</option>
+        </select>
+      </label>
+      <label>제목
+        <input id="postTitle" required />
+      </label>
+      <label>내용
+        <textarea id="postBody" rows="7" required></textarea>
+      </label>
+      <div class="dialog-actions">
+        <button value="cancel">취소</button>
+        <button value="default" class="primary" id="savePostBtn">등록</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
